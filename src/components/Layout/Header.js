@@ -1,16 +1,16 @@
-import { useContext } from "react";
+// import { useContext } from "react";
 import "./header.css";
 import HeaderCartButton from "./HeaderCartButoon";
-import CartContext from "../../store/cart-context";
+// import CartContext from "../../store/cart-context";
 
 //import './Online.css'
 
 const Header = (props) => {
-  const cartCtx = useContext(CartContext);
+  // const cartCtx = useContext(CartContext);
 
-  const numberOfCartItems = cartCtx.items.reduce((currentNumber, item) => {
-    return currentNumber + item.amount;
-  }, 0);
+  // const numberOfCartItems = cartCtx.items.reduce((currentNumber, item) => {
+  //   return currentNumber + item.amount;
+  // }, 0);
   return (
     <>
       <header className="header">

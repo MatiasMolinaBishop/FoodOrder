@@ -1,21 +1,64 @@
-import CartContext from "./cart-context";
 import { useReducer } from "react";
+import CartContext from "./cart-context";
 
 const defaultCartState = {
-  item: [],
+  items: [],
   totalAmount: 0,
 };
 
 const cartReducer = (state, action) => {
   if (action.type === "ADD") {
-    const updatedItems = state.items.concat(action.item);
     const updatedTotalAmount =
-      state.item.totalAmount + action.item.price * action.item.amount;
+      state.totalAmount + action.item.price * action.item.amount;
+    //findIndex()  is a js built in method which finds the index of an item in an array. It takes a function that returns true or false
+    //The finction is executed for every item in the array. In this case we cant to return true if the item we are looking at has the same id as the item we are adding.
+    //If it exists it will return us the index of such item
+    const existingCartItemIdex = state.items.findIndex(
+      (item) => item.id === action.item.id
+    );
+
+    const existingCartItem = state.items[existingCartItemIdex];
+    let updatedItems;
+
+    if (existingCartItem) {
+      const updatedItem = {
+        ...existingCartItem,
+        amount: existingCartItem.amount + action.item.amount,
+      };
+      updatedItems = [...state.items];
+      updatedItems[existingCartItemIdex] = updatedItem;
+    } else {
+      updatedItems = state.items.concat(action.item);
+    }
+
     return {
       items: updatedItems,
-      amount: updatedTotalAmount,
+      totalAmount: updatedTotalAmount,
     };
   }
+  if (action.type === "REMOVE") {
+    const existingCartItemIdex = state.items.findIndex(
+      (item) => item.id === action.id
+    );
+    const existingItem = state.items[existingCartItemIdex];
+    const updatedTotalAmount = state.totalAmount - existingItem.price;
+    let updatedItems;
+    if (existingItem.amount === 1) {
+      updatedItems = state.items.filter((item) => item.id !== action.id);
+    } else {
+      const updatedItem = {
+        ...existingItem,
+        amount: existingItem.amount - 1,
+      };
+      updatedItems = [...state.items];
+      updatedItems[existingCartItemIdex] = updatedItem;
+    }
+    return {
+      items: updatedItems,
+      totalAmount: updatedTotalAmount,
+    };
+  }
+
   return defaultCartState;
 };
 
@@ -32,7 +75,7 @@ const CartProvider = (props) => {
   };
 
   const cartContext = {
-    items: cartState.item,
+    items: cartState.items,
     totalAmount: cartState.totalAmount,
     addItem: addItemToCartHandler,
     removeItem: removeItemFromCartHandler,
